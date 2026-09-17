@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "10662312082",
+    "project_id": "graduateprojectcs-9b9eb",
+    "storage_bucket": "graduateprojectcs-9b9eb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:10662312082:android:841b5236cfb797ade3ce4b",
+        "android_client_info": {
+          "package_name": "com.smartstudent.smart_student_frontend"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "10662312082-7723ahld2l6fnsinifn7aokgtfrdhsni.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.smartstudent.smart_student_frontend",
+            "certificate_hash": "b2d3dbf956af484f0af24d52fbd9e439fed69bb8"
+          }
+        },
+        {
+          "client_id": "10662312082-mc6c2m9lq1ujgh8mjt1g93dteemf2v5i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeNJh7lQkRhQ4Pg_yI8yzSqDx2MIJdG0g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "10662312082-mc6c2m9lq1ujgh8mjt1g93dteemf2v5i.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "10662312082-6ss3dmghsovrp70n6fdtgoiuppj1qvnk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.smartstudent.smartStudentFrontend"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

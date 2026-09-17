@@ -1,0 +1,142 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ═══════════════════════════════════════════════════════════════
+    //  HELPER FUNCTIONS
+    // ═══════════════════════════════════════════════════════════════
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return isAuthenticated() && (userDoc.get('role', '') == 'admin' || userDoc.get('isAdmin', false) == true);
+    }
+
+    function isNotEscalating() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'isAdmin']);
+    }
+
+    // 🔒 Rate Limiting Functions
+    function checkRateLimit(field, secondsLimit) {
+      let userRef = /databases/$(database)/documents/users/$(request.auth.uid);
+      // Check if user exists
+      let userExists = exists(userRef);
+      // Get previous timestamp (default to ancient past if field doesn't exist yet)
+      let lastActionAt = userExists ? get(userRef).data.get(field, timestamp.date(1970, 1, 1)) : timestamp.date(1970, 1, 1);
+      // Ensure enough time has passed
+      let timePassed = lastActionAt < request.time - duration.value(secondsLimit, 's');
+      // Ensure the client is updating the timestamp to NOW in the same batch
+      let timestampUpdated = getAfter(userRef).data.get(field, timestamp.date(1970, 1, 1)) == request.time;
+      
+      return userExists && timePassed && timestampUpdated;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  COLLECTION RULES
+    // ═══════════════════════════════════════════════════════════════
+
+    // ──────────────────────────────────────────────────────────────
+    //  👥 USERS
+    // ──────────────────────────────────────────────────────────────
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      
+      allow create: if isAuthenticated()
+                    && request.auth.uid == userId
+                    && request.resource.data.get('role', 'user') != 'admin'
+                    && request.resource.data.get('isAdmin', false) == false;
+
+      // User can update their own doc (e.g. for lastPostAt rate limits)
+      // but cannot change their role/isAdmin.
+      allow update: if (request.auth.uid == userId && isNotEscalating())
+                    || isAdmin();
+
+      allow delete: if isAdmin();
+
+      match /chats/{chatId} {
+        allow read, write: if request.auth.uid == userId;
+      }
+
+      match /notifications/{notifId} {
+        allow read, update, delete: if request.auth.uid == userId;
+        allow create: if isAuthenticated();
+      }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  📝 POSTS
+    // ──────────────────────────────────────────────────────────────
+    match /posts/{postId} {
+      allow read: if isAuthenticated();
+
+      // 🔒 Rate Limit applied: 30 seconds between posts
+      allow create: if isAuthenticated()
+                    && request.resource.data.authorId == request.auth.uid
+                    && checkRateLimit('lastPostAt', 30);
+
+      allow update: if isAuthenticated()
+                    && (resource.data.authorId == request.auth.uid || isAdmin())
+                    && request.resource.data.authorId == resource.data.authorId;
+
+      allow delete: if isAuthenticated()
+                    && (resource.data.authorId == request.auth.uid || isAdmin());
+
+      // ── Comments subcollection ──
+      match /comments/{commentId} {
+        allow read: if isAuthenticated();
+        
+        // 🔒 Rate Limit applied: 15 seconds between comments
+        allow create: if isAuthenticated()
+                      && request.resource.data.userId == request.auth.uid
+                      && checkRateLimit('lastCommentAt', 15);
+
+        allow update: if isAuthenticated()
+                      && (resource.data.userId == request.auth.uid || isAdmin());
+
+        allow delete: if isAuthenticated()
+                      && (resource.data.userId == request.auth.uid
+                          || isAdmin()
+                          || get(/databases/$(database)/documents/posts/$(postId)).data.authorId == request.auth.uid);
+      }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  🚩 REPORTS
+    // ──────────────────────────────────────────────────────────────
+    match /reports/{reportId} {
+      allow create: if isAuthenticated();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  📅 EXAMS
+    // ──────────────────────────────────────────────────────────────
+    match /exams/{examId} {
+      allow read: if isAuthenticated()
+                  && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated()
+                    && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated()
+                            && resource.data.userId == request.auth.uid;
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  🔔 NOTIFICATIONS (top-level)
+    // ──────────────────────────────────────────────────────────────
+    match /notifications/{notificationId} {
+      allow read, update, delete: if isAuthenticated()
+                                  && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  🔒 SECURE FALLBACK
+    // ──────────────────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

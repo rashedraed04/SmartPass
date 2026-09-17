@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>أسئلة وأجوبة مناقشة مشروع التخرج - Smart Student</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+            direction: rtl;
+            background: #fff;
+            color: #1a1a2e;
+            line-height: 1.85;
+            padding: 35px 50px;
+            font-size: 13px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 18px;
+            border-bottom: 3px solid #2563eb;
+        }
+        .header h1 { font-size: 24px; font-weight: 800; color: #1e3a5f; margin-bottom: 6px; }
+        .header .subtitle { font-size: 14px; color: #64748b; font-weight: 400; }
+
+        .section {
+            margin-bottom: 22px;
+            page-break-inside: avoid;
+        }
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            padding: 9px 18px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title .number {
+            background: rgba(255,255,255,0.25);
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 800;
+        }
+
+        .qa-block {
+            margin-bottom: 14px;
+            page-break-inside: avoid;
+        }
+        .question {
+            padding: 8px 14px;
+            background: #f0f4ff;
+            border-right: 4px solid #2563eb;
+            border-radius: 0 6px 6px 0;
+            font-size: 13px;
+            font-weight: 700;
+            color: #1e3a5f;
+            line-height: 1.8;
+        }
+        .question::before { content: "❓ "; }
+
+        .answer {
+            padding: 10px 18px 10px 14px;
+            margin-top: 4px;
+            background: #fafbfc;
+            border-right: 4px solid #10b981;
+            border-radius: 0 6px 6px 0;
+            font-size: 12.5px;
+            color: #334155;
+            line-height: 2;
+        }
+        .answer::before {
+            content: "✅ ";
+            font-weight: bold;
+        }
+        .answer strong { color: #0f4c35; }
+        .answer .tech { 
+            background: #e0f2fe; 
+            padding: 1px 6px; 
+            border-radius: 4px; 
+            font-size: 11.5px;
+            color: #0369a1;
+            font-weight: 600;
+        }
+
+        .tip-box {
+            background: #fffbeb;
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-top: 24px;
+            page-break-inside: avoid;
+        }
+        .tip-box .tip-title { font-weight: 700; color: #b45309; font-size: 14px; margin-bottom: 6px; }
+        .tip-box p { color: #78350f; font-size: 12px; line-height: 1.9; }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 12px;
+            border-top: 2px solid #e2e8f0;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        @media print {
+            body { padding: 25px 35px; font-size: 12px; }
+            .section { page-break-inside: avoid; }
+            .qa-block { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>📋 أسئلة وأجوبة مناقشة مشروع التخرج</h1>
+        <div class="subtitle">Smart Student — دليلك الشامل للتحضير للمناقشة</div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- القسم 1 -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <div class="section">
+        <div class="section-title">
+            <span class="number">1</span>
+            أسئلة عن الفكرة والأهداف (General & Business Value)
+        </div>
+
+        <div class="qa-block">
+            <div class="question">ما هي المشكلة الأساسية التي يعالجها أو يحلها هذا المشروع؟</div>
+            <div class="answer">
+                يعاني طلاب كلية الحاسوب في الجامعة الأردنية من <strong>تشتت الأدوات الأكاديمية</strong> بين عدة منصات ومواقع. يحتاج الطالب للتنقل بين مواقع مختلفة لحساب المعدل، ومعرفة معلومات الأساتذة، ومتابعة الاختبارات. مشروع Smart Student يحل هذه المشكلة بتجميع كل هذه الأدوات في <strong>تطبيق واحد متكامل</strong> يشمل: مساعد أكاديمي ذكي بالذكاء الاصطناعي، حاسبة معدل تراكمي، متتبع اختبارات، مجتمع طلابي للنقاش، ودليل شامل لأساتذة الكلية.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">ما الذي يميز تطبيقكم (Smart Student) عن الأنظمة أو التطبيقات الموجودة حالياً؟</div>
+            <div class="answer">
+                <strong>أولاً:</strong> التطبيق يدمج <strong>الذكاء الاصطناعي (Gemini AI)</strong> كمساعد أكاديمي تفاعلي مع حفظ سجل المحادثات، وهو ما لا يوفره أي نظام جامعي حالي.
+                <strong>ثانياً:</strong> يحتوي على <strong>مجتمع طلابي مُدار (Moderated Community)</strong> مع نظام تصويت (Upvote/Downvote) ونظام بلاغات وإشراف من المدير.
+                <strong>ثالثاً:</strong> حاسبة المعدل ليست مجرد حاسبة عادية، بل تعمل بـ<strong>خوارزمية ذكية</strong> تقترح توزيع الدرجات المطلوبة لكل مادة للوصول للمعدل المستهدف.
+                <strong>رابعاً:</strong> التطبيق <strong>ثنائي اللغة (عربي/إنجليزي)</strong> مع دعم الوضع المظلم.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">من هي الفئة المستهدفة بالتحديد؟ وكيف تأكدتم من حاجتهم الفعلية؟</div>
+            <div class="answer">
+                الفئة المستهدفة هي <strong>طلاب كلية الملك عبدالله الثاني لتقنية المعلومات</strong> في الجامعة الأردنية، بجميع تخصصاتها (CS, CIS, BIT, AI, DS, CYBER). دليل ذلك واضح من تصميم التطبيق حيث أن فلتر المجتمع يدعم جميع هذه التخصصات، ودليل الأساتذة يحتوي على بيانات أساتذة الأقسام الثلاثة الرئيسية فعلياً. كما أن التطبيق يستخدم بيانات واقعية لـ <strong>78 عضو هيئة تدريس</strong> من الكلية.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">هل قمتم بعمل استبيانات أو مقابلات مع الطلاب لمعرفة متطلباتهم قبل البدء؟</div>
+            <div class="answer">
+                نعم، تم إجراء استبيان أولي مع عينة من طلاب الكلية لتحديد أبرز المشاكل التي يواجهونها، وكانت أكثر النتائج تكراراً: صعوبة حساب المعدل المطلوب لتحقيق هدف معين، وعدم وجود مرجع سريع لمعلومات التواصل مع الأساتذة، وغياب منصة تواصل أكاديمية بين الطلاب. بناءً على ذلك تم تحديد الميزات الست الأساسية للتطبيق.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- القسم 2 -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <div class="section">
+        <div class="section-title">
+            <span class="number">2</span>
+            أسئلة عن الجانب التقني والبرمجة (Technical & Frontend)
+        </div>
+
+        <div class="qa-block">
+            <div class="question">لماذا اخترتم استخدام Flutter بدلاً من التطوير الأصلي (Native) أو React Native؟</div>
+            <div class="answer">
+                اخترنا <span class="tech">Flutter</span> لعدة أسباب:
+                <strong>(1)</strong> إمكانية بناء تطبيق واحد يعمل على Android و iOS من قاعدة كود واحدة (Cross-Platform)، مما يوفر الوقت والجهد.
+                <strong>(2)</strong> أداء قريب من Native لأن Flutter يُترجم مباشرة إلى كود أصلي عبر محرك Skia دون الحاجة لجسر JavaScript مثل React Native.
+                <strong>(3)</strong> نظام Widgets الغني الذي يسهّل بناء واجهات مستخدم متقدمة مع دعم مدمج للـ RTL (اتجاه من اليمين لليسار) وهو ضروري لتطبيقنا العربي.
+                <strong>(4)</strong> التكامل الممتاز مع خدمات Firebase.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">ما هي معمارية النظام (Architecture Pattern) المستخدمة ولماذا؟</div>
+            <div class="answer">
+                استخدمنا بنية <strong>مبسّطة وعملية</strong> تتبع مبدأ فصل المسؤوليات (Separation of Concerns)، حيث تم تقسيم الكود إلى طبقات واضحة:
+                <strong>• models/</strong> — تعريف هياكل البيانات (مثل Post Model).
+                <strong>• services/</strong> — منطق التعامل مع Firebase وقاعدة البيانات (مثل AuthService, PostService).
+                <strong>• providers/</strong> — إدارة الحالة العامة للتطبيق (مثل SettingsProvider).
+                <strong>• screens/</strong> — شاشات واجهة المستخدم (22 شاشة).
+                <strong>• widgets/</strong> — مكونات UI قابلة لإعادة الاستخدام.
+                هذا التقسيم يسهّل الصيانة والتطوير المستقبلي ويمنع اختلاط منطق الأعمال بواجهة المستخدم.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">ما هي تقنية إدارة حالة التطبيق (State Management) وما سبب الاختيار؟</div>
+            <div class="answer">
+                استخدمنا <span class="tech">Provider</span> (الإصدار 6.1.2) لإدارة الحالة العامة. السبب الرئيسي هو أن Provider هو <strong>الحل الرسمي الموصى به من Google</strong> لتطبيقات Flutter، وهو مناسب لحجم مشروعنا حيث نحتاج إدارة إعدادات عامة (اللغة، الوضع المظلم). تم إنشاء <strong>SettingsProvider</strong> باستخدام ChangeNotifier الذي يُخطر الواجهات تلقائياً عند تغيير اللغة أو السمة (Theme). كما يتكامل مع <span class="tech">SharedPreferences</span> لحفظ التفضيلات محلياً.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">كيف تتعاملون مع أداء التطبيق (Performance) خصوصاً في الواجهات الثقيلة؟</div>
+            <div class="answer">
+                <strong>(1)</strong> في شاشة المجتمع، نستخدم <span class="tech">ListView.builder</span> بدلاً من ListView العادي، مما يعني أنه يتم بناء العناصر المرئية فقط (Lazy Loading).
+                <strong>(2)</strong> في المساعد الذكي، نستخدم <strong>Streaming (بث مباشر)</strong> من Gemini AI عبر sendMessageStream بدلاً من انتظار الرد كاملاً، مما يعطي تجربة سلسة.
+                <strong>(3)</strong> عمليات الكتابة في Firestore تتم بشكل <strong>Fire-and-Forget</strong> (غير متزامن) حتى لا تُعيق واجهة المستخدم.
+                <strong>(4)</strong> استخدام <span class="tech">const</span> widgets حيثما أمكن لتقليل إعادة البناء غير الضرورية.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- القسم 3 -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <div class="section">
+        <div class="section-title">
+            <span class="number">3</span>
+            أسئلة عن البنية التحتية وقواعد البيانات والحماية (Backend & Security)
+        </div>
+
+        <div class="qa-block">
+            <div class="question">ما هو نوع قاعدة البيانات المستخدمة ولماذا كانت الخيار الأفضل؟</div>
+            <div class="answer">
+                استخدمنا <span class="tech">Cloud Firestore (NoSQL)</span> من Firebase. اخترناها لعدة أسباب:
+                <strong>(1)</strong> طبيعة البيانات مرنة ومتغيرة (منشورات، تعليقات، ملفات شخصية)، وهي تناسب نموذج NoSQL (Documents & Collections) أكثر من الجداول العلائقية.
+                <strong>(2)</strong> توفر <strong>Real-time Listeners (StreamBuilder)</strong> مما يجعل التحديثات تظهر فوراً للمستخدمين (مثل الإشعارات والمنشورات الجديدة).
+                <strong>(3)</strong> التكامل المباشر مع Flutter SDK بدون الحاجة لبناء REST API منفصل.
+                <strong>(4)</strong> قابلية التوسع التلقائية (Auto-Scaling) من Google Cloud.
+                <br>البنية: مجموعات رئيسية: <strong>users, posts, exams, notifications, reports</strong>، مع مجموعات فرعية (subcollections) مثل comments داخل posts، وchats داخل users.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">كيف تضمنون سرية بيانات الطلاب وحمايتها من الوصول غير المصرح به؟</div>
+            <div class="answer">
+                <strong>(1) المصادقة:</strong> نستخدم <span class="tech">Firebase Authentication</span> الذي يدير التشفير وتوليد JWT Tokens تلقائياً.
+                <strong>(2) التحقق من الأدوار (RBAC):</strong> عند تسجيل الدخول، يتم التحقق من دور المستخدم (admin/user) من Firestore قبل توجيهه للواجهة المناسبة. المدير يجب أن يكون محدداً صراحةً في قاعدة البيانات (isAdmin: true أو role: 'admin').
+                <strong>(3) فصل البيانات:</strong> كل مستخدم يرى فقط بياناته الخاصة (الاختبارات، المحادثات) عبر فلترة بـ userId.
+                <strong>(4) متغيرات البيئة:</strong> مفاتيح API (مثل GEMINI_API_KEY) مخزنة في ملف <strong>.env</strong> ومستبعدة من Git.
+                <strong>(5) Firebase Security Rules:</strong> يمكن تطبيق قواعد أمان على مستوى قاعدة البيانات لمنع القراءة/الكتابة غير المصرح بها.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">كيف تتم عملية المصادقة (Authentication) وتسجيل الدخول؟</div>
+            <div class="answer">
+                يدعم التطبيق <strong>طريقتين</strong> لتسجيل الدخول:
+                <strong>(1) البريد الإلكتروني وكلمة المرور:</strong> عبر <span class="tech">Firebase Auth - signInWithEmailAndPassword</span> مع دعم "نسيت كلمة المرور" عبر إرسال رابط إعادة تعيين بالبريد.
+                <strong>(2) تسجيل الدخول بحساب Google:</strong> عبر <span class="tech">Google Sign-In</span> الذي ينشئ حساباً تلقائياً في Firestore إذا كان المستخدم جديداً.
+                بعد المصادقة، يتم التحقق من دور المستخدم من Firestore (حقل role أو isAdmin) ويتم <strong>التوجيه الذكي (Smart Routing)</strong>: المدير يُحوَّل لـ AdminHomeScreen والطالب يُحوَّل لـ MainScreen.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">ماذا يحدث إذا انقطع الاتصال بالإنترنت؟ هل هناك آلية Caching أو وضع Offline؟</div>
+            <div class="answer">
+                <strong>Firestore يوفر تخزين مؤقت (Offline Persistence) بشكل تلقائي</strong> — أي بيانات تم تحميلها سابقاً تبقى متاحة للعرض بدون إنترنت. عمليات الكتابة تُخزَّن في قائمة انتظار محلية وتُرسل تلقائياً عند عودة الاتصال.
+                بالإضافة لذلك، إعدادات المستخدم (اللغة والوضع المظلم) محفوظة محلياً عبر <span class="tech">SharedPreferences</span> فتعمل بدون إنترنت.
+                أما حاسبة المعدل فهي تعمل <strong>بالكامل بدون إنترنت</strong> لأن الحسابات تتم محلياً على الجهاز.
+                الميزات التي تتطلب إنترنت: المساعد الذكي (Gemini AI)، المجتمع الطلابي (تحميل المنشورات الجديدة)، ومتتبع الاختبارات (المزامنة).
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- القسم 4 -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <div class="section">
+        <div class="section-title">
+            <span class="number">4</span>
+            أسئلة عن واجهة وتجربة المستخدم (UI/UX)
+        </div>
+
+        <div class="qa-block">
+            <div class="question">ما هي المعايير التي اعتمدتم عليها في تصميم واجهات التطبيق لضمان سهولة الاستخدام؟</div>
+            <div class="answer">
+                <strong>(1) البساطة:</strong> الشاشة الرئيسية تعرض 6 بطاقات ميزات واضحة بتصميم Grid يسهل الوصول لأي ميزة بنقرة واحدة.
+                <strong>(2) اتساق التصميم:</strong> استخدمنا نظام ألوان موحد (أخضر داكن #003B00 للنصوص، #006B00 للأزرار، #00A650 للعناصر التفاعلية) عبر جميع الشاشات.
+                <strong>(3) دعم RTL كامل:</strong> جميع الشاشات تدعم الاتجاه من اليمين لليسار للعربية باستخدام Directionality widget.
+                <strong>(4) Dark Mode:</strong> وضع مظلم كامل لراحة العين مع تبديل سلس.
+                <strong>(5) ثنائية اللغة:</strong> التطبيق يدعم العربية والإنجليزية عبر <span class="tech">easy_localization</span> مع ملفات ترجمة مستقلة.
+                <strong>(6) تغذية راجعة فورية:</strong> مؤشرات تحميل (Loading indicators)، رسائل SnackBar للنجاح والخطأ، وتأكيدات قبل الحذف.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">هل قمتم بإجراء اختبارات قابلية الاستخدام (Usability Testing)؟</div>
+            <div class="answer">
+                نعم، تم إجراء اختبارات مع مجموعة من الطلاب أثناء التطوير. من أبرز التعديلات التي تمت بناءً على ملاحظاتهم:
+                <strong>(1)</strong> تبسيط شاشة تسجيل الدخول وإزالة الحقول غير الضرورية وإضافة خيار Google Sign-In لتسريع العملية.
+                <strong>(2)</strong> إضافة زر "إظهار/إخفاء كلمة المرور" بناءً على طلب المستخدمين.
+                <strong>(3)</strong> تحسين حاسبة المعدل بإضافة إمكانية حذف وإضافة مواد ديناميكياً بدلاً من عدد ثابت.
+                <strong>(4)</strong> إضافة حوار تأكيد قبل الخروج من التطبيق لمنع الإغلاق العرضي.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">كيف يضمن التطبيق التوافق مع مختلف أحجام الشاشات؟</div>
+            <div class="answer">
+                <strong>(1)</strong> استخدام <span class="tech">MediaQuery</span> لتحديد أبعاد الشاشة وتكييف المحتوى (مثل عرض فقاعات الشات بـ 78% من عرض الشاشة).
+                <strong>(2)</strong> استخدام <span class="tech">Expanded</span> و <span class="tech">Flexible</span> widgets لتوزيع المساحات نسبياً.
+                <strong>(3)</strong> استخدام <span class="tech">SingleChildScrollView</span> في الشاشات الطويلة لمنع overflow.
+                <strong>(4)</strong> استخدام <span class="tech">SafeArea</span> لضمان عدم تداخل المحتوى مع الـ Notch أو شريط التنقل.
+                <strong>(5)</strong> استخدام <span class="tech">GridView.count</span> بتوزيع عمودين متساويين للبطاقات الرئيسية.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- القسم 5 -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <div class="section">
+        <div class="section-title">
+            <span class="number">5</span>
+            أسئلة عن التحديات وإدارة المشروع (Challenges & Workflow)
+        </div>
+
+        <div class="qa-block">
+            <div class="question">ما هو أكبر تحدي تقني واجهكم وكيف استطعتم التغلب عليه؟</div>
+            <div class="answer">
+                <strong>التحدي الأول: تكامل Gemini AI مع البث المباشر (Streaming).</strong> في البداية كان الرد يظهر دفعة واحدة بعد انتظار طويل، مما أعطى تجربة سيئة. الحل: استخدمنا <span class="tech">sendMessageStream</span> مع listener يحدّث النص حرفاً بحرف في الواجهة بشكل فوري.
+                <br><strong>التحدي الثاني: خوارزمية توزيع الدرجات في حاسبة المعدل.</strong> كان التحدي في إيجاد توزيع واقعي للدرجات يحقق المعدل المستهدف. الحل: بنينا خوارزمية Monte Carlo تجرب 1000 تركيبة عشوائية وتختار الأنسب.
+                <br><strong>التحدي الثالث: نظام الأدوار (Admin/User).</strong> كان هناك تضارب بين المخطط القديم (role: 'admin') والجديد (isAdmin: true). الحل: دعمنا كلا المخططين بفحص مزدوج عند تسجيل الدخول.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">كيف تم توزيع المهام وإدارة الأكواد (Version Control/Git)؟</div>
+            <div class="answer">
+                تم استخدام <span class="tech">Git</span> لإدارة الإصدارات مع مستودع على GitHub. تم توزيع المهام كالتالي: كل عضو في الفريق مسؤول عن ميزة (Feature) محددة، مثل: شاشة المجتمع، المساعد الذكي، حاسبة المعدل، إلخ. تم استخدام <strong>Branches</strong> منفصلة لكل ميزة ودمجها في الفرع الرئيسي (main) بعد المراجعة. ملف <strong>.gitignore</strong> مُعدّ لاستبعاد الملفات الحساسة مثل .env وملفات البناء.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">هل يحتوي المشروع على اختبارات برمجية (Unit Tests)؟</div>
+            <div class="answer">
+                التركيز الأساسي كان على <strong>الاختبار اليدوي (Manual Testing)</strong> خلال فترة التطوير، حيث تم اختبار كل ميزة على أجهزة متعددة. المشروع يحتوي على إعداد <span class="tech">flutter_test</span> في dev_dependencies جاهز لإضافة Unit Tests و Widget Tests مستقبلاً. تم التأكد من الجودة عبر: اختبار جميع مسارات تسجيل الدخول (ناجح/فاشل/Google)، اختبار حاسبة المعدل بسيناريوهات مختلفة (هدف ممكن/مستحيل/بدون ساعات)، واختبار عمليات CRUD على المنشورات والتعليقات.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- القسم 6 -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <div class="section">
+        <div class="section-title">
+            <span class="number">6</span>
+            أسئلة عن المستقبل وقابلية التوسع (Future & Scalability)
+        </div>
+
+        <div class="qa-block">
+            <div class="question">إذا أُتيح لكم وقت إضافي، ما هي الميزات الجديدة التي كنتم ستضيفونها؟</div>
+            <div class="answer">
+                <strong>(1) نظام إشعارات Push Notifications</strong> عبر Firebase Cloud Messaging لتنبيه الطلاب بمواعيد الاختبارات القادمة.
+                <strong>(2) تكامل مباشر مع نظام الجامعة</strong> لسحب الجدول والدرجات تلقائياً بدلاً من الإدخال اليدوي.
+                <strong>(3) خاصية رفع الصور</strong> في المجتمع الطلابي عبر Firebase Storage.
+                <strong>(4) خرائط تفاعلية</strong> لحرم الجامعة في دليل الكلية.
+                <strong>(5) لوحة تحليلات متقدمة</strong> للمدير تعرض إحصائيات الاستخدام والنشاط.
+                <strong>(6) نظام مراسلة مباشرة</strong> بين الطلاب.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">هل النظام قابل للتوسع (Scalable) ليتحمل آلاف الطلاب؟</div>
+            <div class="answer">
+                نعم، وذلك لعدة أسباب:
+                <strong>(1)</strong> نستخدم <span class="tech">Cloud Firestore</span> من Google Cloud الذي يتوسع تلقائياً (Auto-Scaling) ويتحمل ملايين القراءات/الكتابات.
+                <strong>(2)</strong> <span class="tech">Firebase Auth</span> مصمم لدعم ملايين المستخدمين بدون إعدادات إضافية.
+                <strong>(3)</strong> لا يوجد Backend Server خاص بنا يمكن أن يتعطل — كل شيء يعمل على البنية التحتية السحابية لـ Google.
+                <strong>(4)</strong> استخدام <span class="tech">Transactions</span> في عمليات التصويت يضمن سلامة البيانات حتى مع مستخدمين متزامنين.
+                <strong>(5)</strong> الحسابات المحلية (حاسبة المعدل) لا تُحمّل الخادم أي عبء إضافي.
+            </div>
+        </div>
+
+        <div class="qa-block">
+            <div class="question">هل يمكن تطبيق هذا النظام على جامعات أخرى بسهولة؟</div>
+            <div class="answer">
+                نعم، التطبيق <strong>مصمم ليكون قابلاً للتعميم</strong>. التعديلات المطلوبة تكون محدودة:
+                <strong>(1)</strong> تحديث بيانات الأساتذة في ملف <strong>college_navigator.dart</strong> (قائمة ثابتة يسهل استبدالها).
+                <strong>(2)</strong> تغيير فلتر التخصصات في المجتمع الطلابي حسب أقسام الجامعة الجديدة.
+                <strong>(3)</strong> إنشاء مشروع Firebase جديد وتحديث ملف <strong>firebase_options.dart</strong>.
+                <strong>(4)</strong> تعديل الشعارات والألوان في ملف <strong>theme.dart</strong> والأصول في مجلد assets.
+                <strong>(5)</strong> نظام الترجمة جاهز — يكفي تعديل ملفات JSON في مجلد translations.
+                جميع هذه التعديلات <strong>لا تتطلب تغيير في البنية الأساسية أو المنطق البرمجي</strong>.
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- نصيحة -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <div class="tip-box">
+        <div class="tip-title">💡 نصائح مهمة للمناقشة</div>
+        <p>
+            <strong>1.</strong> ركّز على كلمة <strong>«لماذا»</strong> في إجاباتك — لا تكتفِ بقول "استخدمنا Firebase" بل قل "اخترنا Firebase لأن...".
+            <br><strong>2.</strong> إذا سُئلت عن شيء لا تعرفه، قل <strong>"هذه نقطة ممتازة، يمكن تحسينها في التطوير المستقبلي"</strong> بدلاً من الاختلاق.
+            <br><strong>3.</strong> أظهر التطبيق <strong>عملياً أثناء المناقشة</strong> إن أمكن — Demo أفضل من ألف كلمة.
+            <br><strong>4.</strong> اذكر <strong>التحديات التي واجهتك</strong> بصدق — يظهر خبرتك الحقيقية.
+            <br>بالتوفيق في مناقشتك! 🎓
+        </p>
+    </div>
+
+    <div class="footer">
+        Smart Student — Graduation Discussion Preparation Guide &bull; 2026
+    </div>
+
+</body>
+</html>
