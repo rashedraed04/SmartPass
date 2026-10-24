@@ -119,6 +119,7 @@ REST_FRAMEWORK = {
         'anon': '100/day',
         'user': '1000/day',
         'auth': '10/minute',
+        'assistant': '60/hour',
     }
 }
 
@@ -141,3 +142,19 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 CORS_ALLOW_ALL_ORIGINS = True
 
 AUTH_USER_MODEL = 'api.User'
+
+# Google Sign-In: ID tokens are only accepted when issued for one of these OAuth client IDs.
+# Default is the web client from smart_student_frontend/android/app/google-services.json,
+# which the Android app uses to request ID tokens.
+GOOGLE_OAUTH_CLIENT_IDS = [
+    c.strip()
+    for c in os.environ.get(
+        'GOOGLE_OAUTH_CLIENT_IDS',
+        '10662312082-mc6c2m9lq1ujgh8mjt1g93dteemf2v5i.apps.googleusercontent.com',
+    ).split(',')
+    if c.strip()
+]
+
+# Academic Assistant: the Gemini key stays on the server and is never sent to the app.
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-3-flash-preview')

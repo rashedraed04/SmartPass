@@ -1,4 +1,4 @@
-from rest_framework.throttling import AnonRateThrottle
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
 class AuthRateThrottle(AnonRateThrottle):
     """
@@ -6,3 +6,10 @@ class AuthRateThrottle(AnonRateThrottle):
     to mitigate credential stuffing, brute-force, and registration flood attacks.
     """
     scope = 'auth'
+
+
+class AssistantRateThrottle(UserRateThrottle):
+    """
+    Per-user limit on the Academic Assistant so one account cannot run up the Gemini bill.
+    """
+    scope = 'assistant'

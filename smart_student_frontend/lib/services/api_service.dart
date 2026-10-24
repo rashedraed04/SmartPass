@@ -156,6 +156,40 @@ class ApiService {
     return response;
   }
 
+  /// POSTs [body] and yields the response text as it arrives (used for streamed replies).
+  /// Throws [ApiException] if the server answers with anything other than 200.
+  Stream<String> postStream(String endpoint, Map<String, dynamic> body) async* {
+    final url = Uri.parse('$baseUrl/$endpoint');
+    final client = http.Client();
+
+    Future<http.StreamedResponse> send() async {
+      final request = http.Request('POST', url)
+        ..headers.addAll(await _getHeaders())
+        ..body = jsonEncode(body);
+      return client.send(request);
+    }
+
+    try {
+      var response = await send();
+
+      if (response.statusCode == 401) {
+        await response.stream.drain<void>();
+        final refreshed = await refreshToken();
+        if (refreshed) {
+          response = await send();
+        }
+      }
+
+      if (response.statusCode != 200) {
+        throw ApiException(response.statusCode, await response.stream.bytesToString());
+      }
+      // utf8.decoder copes with multi-byte (e.g. Arabic) characters split across chunks.
+      yield* response.stream.transform(utf8.decoder);
+    } finally {
+      client.close();
+    }
+  }
+
   Future<http.Response> put(String endpoint, Map<String, dynamic> body) async {
     final url = Uri.parse('$baseUrl/$endpoint');
     var response = await http.put(url, headers: await _getHeaders(), body: jsonEncode(body));
@@ -194,6 +228,16 @@ class ApiService {
     }
     return response;
   }
+}
+
+class ApiException implements Exception {
+  final int statusCode;
+  final String body;
+
+  ApiException(this.statusCode, this.body);
+
+  @override
+  String toString() => 'HTTP $statusCode: $body';
 }
 
 // Global singleton

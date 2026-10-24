@@ -5,7 +5,6 @@ import '../providers/settings_provider.dart';
 import 'main_screen.dart';
 import 'admin_home_screen.dart';
 import 'package:smart_student_frontend/services/auth_service.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -68,17 +67,18 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _signInWithGoogle() async {
     setState(() => _isLoading = true);
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        setState(() => _isLoading = false);
-        return;
-      }
+      final result = await authService.loginWithGoogle();
+      if (result == null) return; // Account picker closed
 
-      // TODO: Implement Google sign-in via backend OAuth endpoint
+      // The backend only lets student accounts in through Google, so no admin routing here.
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تسجيل الدخول بحساب Google قيد التطوير'),
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MainScreen(
+              email: authService.currentUserEmail ?? '',
+              token: result['token'] ?? '',
+            ),
           ),
         );
       }

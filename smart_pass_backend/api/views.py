@@ -1,15 +1,27 @@
+import logging
+
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.http import StreamingHttpResponse
+from google import genai
+from google.auth import exceptions as google_auth_exceptions
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token as google_id_token
 from .models import User, Post, Comment, Notification, Report, Exam
 from .serializers import (
     UserSerializer, AdminUserSerializer, PostSerializer, 
     CommentSerializer, NotificationSerializer, ReportSerializer, ExamSerializer
 )
 from .permissions import IsOwnerOrAdminOrReadOnly, IsAdminRole
-from .throttles import AuthRateThrottle
+from .throttles import AuthRateThrottle, AssistantRateThrottle
+
+logger = logging.getLogger(__name__)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -276,3 +288,113 @@ class ExamViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class GoogleLoginView(APIView):
+    """
+    Exchanges a Google ID token from the app for this API's JWT pair.
+    Matches an existing account by verified email, or creates a student account.
+    """
+    permission_classes = [permissions.AllowAny]
+    throttle_classes = [AuthRateThrottle]
+
+    def post(self, request):
+        token = request.data.get('id_token')
+        if not token:
+            return Response({"error": "id_token is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            info = google_id_token.verify_oauth2_token(
+                token, google_requests.Request(), audience=settings.GOOGLE_OAUTH_CLIENT_IDS
+            )
+        except google_auth_exceptions.TransportError:
+            logger.exception("Could not reach Google to verify an ID token")
+            return Response({"error": "Google sign-in is unavailable, try again later"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except (ValueError, google_auth_exceptions.GoogleAuthError):
+            return Response({"error": "Invalid Google token"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        email = info.get('email')
+        if not email or not info.get('email_verified'):
+            return Response({"error": "Google account email is not verified"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        user = User.objects.filter(email__iexact=email).first()
+        if user is None:
+            if User.objects.filter(username=email).exists():
+                return Response({"error": "Username already taken"}, status=status.HTTP_400_BAD_REQUEST)
+            # Same shape as /users/register/: username is the email, role is always 'user'.
+            # No password is set, so this account can only sign in with Google.
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                first_name=info.get('given_name', ''),
+                last_name=info.get('family_name', ''),
+                role='user',
+            )
+
+        if not user.is_active:
+            return Response({"error": "This account is disabled"}, status=status.HTTP_403_FORBIDDEN)
+        # Admin accounts must use their password, so access to a Google account alone can't open the dashboard.
+        if user.is_staff or user.role == 'admin':
+            return Response({"error": "Admin accounts must sign in with a password"}, status=status.HTTP_403_FORBIDDEN)
+
+        refresh = RefreshToken.for_user(user)
+        return Response({'refresh': str(refresh), 'access': str(refresh.access_token)})
+
+
+class AssistantChatView(APIView):
+    """
+    Streams a Gemini reply for the Academic Assistant as plain text chunks.
+    The app sends the new message plus the earlier turns of the conversation.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    throttle_classes = [AssistantRateThrottle]
+
+    MAX_MESSAGE_CHARS = 4000
+    MAX_HISTORY_TURNS = 20
+
+    def post(self, request):
+        message = request.data.get('message')
+        history = request.data.get('history') or []
+        if not isinstance(message, str) or not message.strip():
+            return Response({"error": "message is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if len(message) > self.MAX_MESSAGE_CHARS:
+            return Response({"error": f"message must be at most {self.MAX_MESSAGE_CHARS} characters"}, status=status.HTTP_400_BAD_REQUEST)
+        if not isinstance(history, list):
+            return Response({"error": "history must be a list"}, status=status.HTTP_400_BAD_REQUEST)
+
+        contents = []
+        for turn in history[-self.MAX_HISTORY_TURNS:]:
+            if not isinstance(turn, dict) or turn.get('role') not in ('user', 'model') or not isinstance(turn.get('text'), str):
+                return Response({"error": "each history item needs a role of 'user' or 'model' and a text"}, status=status.HTTP_400_BAD_REQUEST)
+            if turn['text'].strip():
+                contents.append({'role': turn['role'], 'parts': [{'text': turn['text'][:self.MAX_MESSAGE_CHARS]}]})
+        contents.append({'role': 'user', 'parts': [{'text': message.strip()}]})
+
+        if not settings.GEMINI_API_KEY:
+            return Response({"error": "The assistant is not configured on the server"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        try:
+            client = genai.Client(api_key=settings.GEMINI_API_KEY)
+            stream = client.models.generate_content_stream(model=settings.GEMINI_MODEL, contents=contents)
+            # Pull the first chunk here so a bad key or quota error becomes a proper error response
+            # instead of an empty 200.
+            first = next(stream, None)
+        except Exception:
+            logger.exception("Gemini request failed")
+            return Response({"error": "The assistant could not reply, try again later"}, status=status.HTTP_502_BAD_GATEWAY)
+
+        def chunks():
+            # The generator holds the client: if it were garbage collected after post() returns,
+            # it would close the connection the stream is still reading from.
+            try:
+                if first is not None and first.text:
+                    yield first.text
+                for chunk in stream:
+                    if chunk.text:
+                        yield chunk.text
+            except Exception:
+                logger.exception("Gemini stream broke off")
+            finally:
+                client.close()
+
+        return StreamingHttpResponse(chunks(), content_type='text/plain; charset=utf-8')

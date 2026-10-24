@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
+import '../services/api_service.dart';
 
 // ─────────────────────────────────────────────
 //  Data model for a single chat bubble
@@ -54,19 +53,11 @@ class _AcademicAssistantScreenState extends State<AcademicAssistantScreen>
   
   
 
-  // ── Gemini Configuration ───────────────────────────────────────────────
-  late final GenerativeModel _model;
-  late ChatSession _chatSession;
-
-  @override
-  void initState() {
-    super.initState();
-    _model = GenerativeModel(
-      model: 'gemini-3-flash-preview',
-      apiKey: dotenv.env['GEMINI_API_KEY'] ?? '',
-    );
-    _chatSession = _model.startChat();
-  }
+  // ── Gemini (via the backend, which holds the API key) ──────────────────
+  // Completed turns, sent with each message so the assistant keeps the context.
+  final List<Map<String, String>> _history = [];
+  // Bumped by "New chat" so a reply still streaming for the old chat is dropped.
+  int _chatGeneration = 0;
 
   // ── Quick-action cards (localized at build time) ────────────────────────
   List<_QuickAction> _buildQuickActions() => [
@@ -109,6 +100,8 @@ class _AcademicAssistantScreenState extends State<AcademicAssistantScreen>
     });
     
     final botMsgIndex = _messages.length - 1;
+    final generation = _chatGeneration;
+    bool isStale() => !mounted || generation != _chatGeneration;
     _scrollToBottom();
     
     // uid will come from stored auth token when needed
@@ -118,48 +111,40 @@ class _AcademicAssistantScreenState extends State<AcademicAssistantScreen>
       _currentChatId ??= DateTime.now().millisecondsSinceEpoch.toString();
 
       // Requirement 2: Real-Time Streaming
-      final stream = _chatSession.sendMessageStream(Content.text(trimmed));
-      
-      stream.listen(
-        (event) {
-          if (event.text != null) {
-            setState(() {
-              final currentText = _messages[botMsgIndex].text;
-              _messages[botMsgIndex] = ChatMessage(
-                text: currentText + event.text!,
-                isUser: false,
-              );
-            });
-            _scrollToBottom();
-          }
-        },
-        onDone: () {
-          // Chat saved locally only
-          setState(() => _isSending = false);
-        },
-        onError: (e) {
-           debugPrint('====== GEMINI ERROR ======');
-           debugPrint('$e');
-          setState(() {
-            final currentText = _messages[botMsgIndex].text;
-            _messages[botMsgIndex] = ChatMessage(
-              text: currentText.isNotEmpty 
-                  ? '$currentText\n\n[تعذر الاتصال بـ Gemini. الخطأ: $e]'
-                  : 'تعذر الاتصال بـ Gemini. الخطأ:\n$e',
-              isUser: false,
-            );
-            _isSending = false;
-          });
-        },
-      );
+      final stream = apiService.postStream('assistant/chat/', {
+        'message': trimmed,
+        'history': List.of(_history),
+      });
 
+      await for (final chunk in stream) {
+        if (isStale()) return;
+        setState(() {
+          final currentText = _messages[botMsgIndex].text;
+          _messages[botMsgIndex] = ChatMessage(
+            text: currentText + chunk,
+            isUser: false,
+          );
+        });
+        _scrollToBottom();
+      }
+
+      if (isStale()) return;
+      // Chat saved locally only
+      _history
+        ..add({'role': 'user', 'text': trimmed})
+        ..add({'role': 'model', 'text': _messages[botMsgIndex].text});
+      setState(() => _isSending = false);
     } catch (e) {
-      // This catch block handles synchronous errors before listen
-       debugPrint('====== GEMINI SYNC ERROR ======');
+       debugPrint('====== GEMINI ERROR ======');
        debugPrint('$e');
+      if (isStale()) return;
+      final error = e is ApiException && e.statusCode == 429
+          ? 'وصلت إلى الحد المسموح من الرسائل، حاول مرة أخرى لاحقاً.'
+          : 'تعذر الاتصال بـ Gemini. الخطأ: $e';
       setState(() {
+        final currentText = _messages[botMsgIndex].text;
         _messages[botMsgIndex] = ChatMessage(
-          text: 'تعذر الاتصال بـ Gemini. الخطأ:\n$e',
+          text: currentText.isNotEmpty ? '$currentText\n\n[$error]' : error,
           isUser: false,
         );
         _isSending = false;
@@ -255,7 +240,9 @@ class _AcademicAssistantScreenState extends State<AcademicAssistantScreen>
                     _messages.clear();
                     _inputController.clear();
                     _currentChatId = null;
-                    _chatSession = _model.startChat();
+                    _history.clear();
+                    _chatGeneration++;
+                    _isSending = false;
                     _showWelcome = true;
                   });
                 },
