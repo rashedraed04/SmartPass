@@ -12,25 +12,29 @@ Made by Rashed Al-Awamleh.
 
 ```
 Flutter app (smart_student_frontend)
-   │                         │
-   │ REST + JWT              │ chat, streamed
-   ▼                         ▼
-Django REST API          Google Gemini
-(smart_pass_backend)
    │
+   │ REST + JWT
+   ▼
+Django REST API (smart_pass_backend) ──► Google Gemini (assistant replies, streamed)
+   │                                 └─► Google (checks Google sign-in tokens)
    ▼
 PostgreSQL
 ```
 
 - **Backend:** Django + Django REST Framework, JWT auth (SimpleJWT, 2-hour access
   tokens, rotating 7-day refresh tokens), PostgreSQL. Every endpoint needs a login
-  except sign-up and getting tokens. Login, refresh and sign-up are throttled to 10
+  except sign-up, Google sign-in and getting tokens. Those are throttled to 10
   requests per minute.
 - **Permissions:** users can only edit or delete their own posts, comments and exams,
   and only see their own exams, notifications and reports. Admins (`role = "admin"` or
   Django staff) can moderate everything and resolve or dismiss reports.
-- **AI assistant:** the app talks to Gemini directly through `google_generative_ai`,
-  using the key from the app's `.env`. The backend is not involved.
+- **Sign-in:** email and password, or Google on Android. For Google, the app sends the
+  Google ID token to the backend, which verifies it with Google, matches the account
+  by its verified email (or creates a student account) and returns the usual JWTs.
+  Admin accounts can only sign in with their password.
+- **AI assistant:** the app sends each message, plus the earlier turns of the chat,
+  to the backend. The backend calls Gemini with its own key and streams the reply
+  back, so the key never ships inside the app. Each user can send 60 messages an hour.
 
 ## Features
 
@@ -42,9 +46,6 @@ PostgreSQL
 | College Guide | Searchable directory of CS, CIS and BIT faculty with their email addresses |
 | Tech Community | Posts and comments with up/down votes, notifications and reporting |
 | Admin | Stats dashboard, student list, community browser and a moderation queue for reports |
-
-Google Sign-In appears on the login screen but is not connected to the backend yet;
-email and password login works.
 
 ## Repository layout
 
@@ -60,6 +61,8 @@ All routes are under `/api/`.
 | Route | Purpose |
 | --- | --- |
 | `auth/login/`, `auth/refresh/` | Get and refresh JWT tokens |
+| `auth/google/` | Swap a Google ID token for JWT tokens |
+| `assistant/chat/` | Send a message to the Academic Assistant; the reply streams back as plain text |
 | `users/register/`, `users/me/`, `users/stats/` | Sign up, own profile, admin stats |
 | `posts/`, `posts/{id}/comments/`, `posts/me/` | Community posts and their comments |
 | `posts/{id}/upvote/`, `posts/{id}/downvote/` | Voting (also on `comments/{id}/`) |
@@ -90,9 +93,13 @@ DB_USER=postgres
 DB_PASSWORD=your_password
 DB_HOST=localhost
 DB_PORT=5432
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
 Settings refuse to start without `DJANGO_SECRET_KEY` unless `DJANGO_DEBUG` is true.
+Without `GEMINI_API_KEY` everything works except the assistant. Optional:
+`GEMINI_MODEL` (default `gemini-3-flash-preview`) and `GOOGLE_OAUTH_CLIENT_IDS`
+(comma-separated; defaults to the web client in `google-services.json`).
 
 ```bash
 python manage.py migrate
@@ -104,15 +111,21 @@ python manage.py runserver
 
 ```bash
 cd smart_student_frontend
-cp .env.example .env               # then set GEMINI_API_KEY and API_BASE_URL
+cp .env.example .env               # then set API_BASE_URL if needed
 flutter pub get
 flutter run
 ```
 
-If `API_BASE_URL` is not set, the app uses `http://10.0.2.2:8000/api` on the Android
-emulator and `http://127.0.0.1:8000/api` on desktop and web. On a physical phone, use
-your computer's LAN address. `.env` is bundled into the app, so use a Gemini key that
-is restricted to this app.
+The app's `.env` only holds `API_BASE_URL`, since it is bundled into the app. If it is
+not set, the app uses `http://10.0.2.2:8000/api` on the Android emulator and
+`http://127.0.0.1:8000/api` on desktop and web. On a physical phone, use your
+computer's LAN address.
+
+Google sign-in uses the OAuth clients in `android/app/google-services.json` (Firebase
+project `graduateprojectcs-9b9eb`). It only works when the APK is signed with a key
+whose SHA-1 is registered there. To build on another machine or with a release key,
+add that key's SHA-1 to the Android app in the Firebase console and download a new
+`google-services.json`.
 
 More setup detail: [backend README](smart_pass_backend/README.md),
 [app README](smart_student_frontend/README.md).
@@ -127,5 +140,7 @@ python manage.py test --settings=smart_backend.test_settings
 ```
 
 They cover protection against writing read-only fields (authors, report status),
-blocking non-admins from changing reports, password rules on sign-up, and throttling
-on the auth endpoints.
+blocking non-admins from changing reports, password rules on sign-up, throttling on
+the auth endpoints, Google sign-in (token checks, account matching, admins refused)
+and the assistant (streaming, input checks, Gemini errors, the hourly limit). Google
+and Gemini are mocked, so no keys are needed.

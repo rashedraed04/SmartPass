@@ -40,6 +40,12 @@ DJANGO_SECRET_KEY=your_secret_key_here
 # DB_NAME=your_db_name
 # DB_USER=your_db_user
 # DB_PASSWORD=your_db_password
+
+# Gemini key for the Academic Assistant (kept on the server, never sent to the app)
+GEMINI_API_KEY=your_gemini_api_key_here
+# Optional: GEMINI_MODEL (default gemini-3-flash-preview)
+# Optional: GOOGLE_OAUTH_CLIENT_IDS, comma-separated client IDs that Google sign-in
+# tokens may be issued for (default: the web client in the app's google-services.json)
 ```
 
 ### 5. Apply Database Migrations

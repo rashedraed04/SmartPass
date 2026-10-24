@@ -20,10 +20,10 @@ flutter pub get
 ```
 
 ### 3. Configure Environment Variables
-The application relies on environment variables for sensitive configurations. 
+The application reads its settings from a `.env` file, which is bundled into the app, so never put secrets in it.
 Copy the provided example file to create your own configuration:
 - Copy `.env.example` and rename it to `.env`.
-- Fill in the required variables (e.g., `API_BASE_URL`, `GEMINI_API_KEY`).
+- Set `API_BASE_URL` if the default doesn't fit your setup.
 
 ### 4. Run the Application
 Start the app on an attached device or emulator:
@@ -33,4 +33,4 @@ flutter run
 
 ## Available Environment Variables
 - `API_BASE_URL`: The endpoint base URL for the backend API.
-- `GEMINI_API_KEY`: API key required for accessing Gemini AI features.
+- The Gemini key for the Academic Assistant is not set here: it lives in the backend's `.env`, because this file is bundled into the app.
